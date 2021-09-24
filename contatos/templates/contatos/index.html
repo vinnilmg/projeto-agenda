@@ -16,17 +16,47 @@
     <tbody>
 
     {% for contato in contatos %}
-        <tr>
-            <td>
-                <a href="{% url 'ver_contato' contato.id %}"> {{ contato.nome }}</a>
-            </td>
-            <td>{{ contato.sobrenome }}</td>
-            <td>{{ contato.telefone }}</td>
-            <td>{{ contato.categoria }}</td>
-        </tr>
+        {% if contato.mostrar %}
+            <tr>
+                <td>
+                    <a href="{% url 'ver_contato' contato.id %}"> {{ contato.nome }}</a>
+                </td>
+                <td>{{ contato.sobrenome }}</td>
+                <td>{{ contato.telefone }}</td>
+                <td>{{ contato.categoria }}</td>
+            </tr>
+        {% endif %}
     {% endfor %}
 
     </tbody>
 </table>
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        {% if contatos.number != 1 %}
+            <li class="page-item">
+                <a class="page-link" href='?p={{contatos.number|add:"-1"}}'> Anterior </a>
+            </li>
+        {% else %}
+             <li class="page-item">
+                <a class="page-link" href='?p={{ contatos.number }}'> Anterior </a>
+            </li>
+        {% endif %}
+        {% for pagina in contatos.paginator.page_range %}
+            {%if contatos.number == pagina %}
+            <li class="page-item active">
+                <a class="page-link" href="?p={{ pagina }}"> {{ pagina }} </a>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a class="page-link" href="?p={{ pagina }}"> {{ pagina }} </a>
+            </li>
+            {% endif %}
+        {% endfor %}
+        <li class="page-item">
+            <a class="page-link" href='?p={{contatos.number|add:"1"}}'> Próximo </a>
+        </li>
+    </ul>
+</nav>
 
 {% endblock %}
