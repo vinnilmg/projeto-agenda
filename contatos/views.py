@@ -1,18 +1,23 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.http import Http404
 from django.db.models import Q, Value
 from django.db.models.functions import Concat
 from .models import Contato
-
-# Create your views here.
+from django.contrib import messages
 
 
 def index(request):
+
     # contatos = Contato.objects.all()
     contatos = Contato.objects.order_by('-id').filter(
         mostrar=True
     )
+    if len(contatos) == 0:
+        messages.add_message(request, messages.ERROR, 'Não há contatos para exibir.')
+        return render(request, 'contatos/index.html')
+
+
     paginator = Paginator(contatos, 5)
 
     paginas = request.GET.get('p')
@@ -24,11 +29,16 @@ def index(request):
 
 
 def ver_contato(request, contato_id):
-    # contato = Contato.objects.get(id=contato_id)
-    contato = get_object_or_404(Contato, id=contato_id)
+    try:
+        # contato = get_object_or_404(Contato, id=contato_id)
+        contato = Contato.objects.get(id=contato_id)
+    except Contato.DoesNotExist:
+        messages.add_message(request, messages.ERROR, 'Contato não localizado.')
+        return redirect('index')
 
     if not contato.mostrar:
-        raise Http404()
+        messages.add_message(request, messages.ERROR, 'Contato não pode ser exibido.')
+        return redirect('index')
 
     return render(request, 'contatos/visualiza_contato.html', {
         'contato': contato
@@ -38,8 +48,9 @@ def ver_contato(request, contato_id):
 def busca(request):
     termo = request.GET.get('termo')
 
-    if termo is None:
-        raise Http404()
+    if termo is None or not termo:
+        messages.add_message(request, messages.ERROR, 'Informe um valor para pesquisa.')
+        return redirect('index')
 
     campos = Concat('nome', Value(' '), 'sobrenome')
 
