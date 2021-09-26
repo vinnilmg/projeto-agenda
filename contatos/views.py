@@ -5,8 +5,10 @@ from django.db.models import Q, Value
 from django.db.models.functions import Concat
 from .models import Contato
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 
+@login_required(redirect_field_name='login')
 def index(request):
 
     # contatos = Contato.objects.all()
@@ -28,6 +30,7 @@ def index(request):
     })
 
 
+@login_required(redirect_field_name='login')
 def ver_contato(request, contato_id):
     try:
         # contato = get_object_or_404(Contato, id=contato_id)
@@ -45,6 +48,7 @@ def ver_contato(request, contato_id):
     })
 
 
+@login_required(redirect_field_name='login')
 def busca(request):
     termo = request.GET.get('termo')
 

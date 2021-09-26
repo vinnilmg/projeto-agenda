@@ -1,10 +1,22 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'index' %}">Agenda</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
-                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+        {% if user.is_authenticated %}
+            <a class="navbar-brand" href="{% url 'index' %}">Agenda</a>
+        <a class="navbar-brand" href="{% url 'dashboard' %}">Dashboard</a>
+            <a class="navbar-brand" href="{% url 'logout' %}">Logout</a>
+        {% else %}
+            <a class="navbar-brand" href="{% url 'cadastro' %}">Cadastro</a>
+
+            {% if 'login' not in request.path %}
+                <a class="navbar-brand" href="{% url 'login' %}">Login</a>
+            {% endif %}
+
+        {% endif %}
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                    aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+
         </button>
     </div>
 </nav>
